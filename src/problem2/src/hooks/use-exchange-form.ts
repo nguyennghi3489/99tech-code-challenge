@@ -58,11 +58,6 @@ export const useExchangeForm = () => {
 
   const swapCurrency = () => {
     const tempToken = fromToken;
-    console.log(lastEditedField.current);
-    console.log(fromToken);
-    console.log(toToken);
-    console.log(fromAmount);
-    console.log(toAmount);
     if (lastEditedField.current === "from") {
       debounceUpdateAmount(
         "toAmount",
