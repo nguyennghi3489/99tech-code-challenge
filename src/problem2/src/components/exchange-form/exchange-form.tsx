@@ -1,5 +1,4 @@
-import { useForm, Controller } from "react-hook-form";
-import { useGetTokenList } from "../../hooks/use-get-token-list";
+import { Controller } from "react-hook-form";
 import { Button } from "../ui/button";
 import {
   Select,
@@ -9,72 +8,27 @@ import {
   SelectValue,
 } from "../ui/select";
 import { CurrencyLabel } from "../ui/currency-label";
-import { useEffect } from "react";
 import { CurrencyInput } from "../ui/currency-input";
 import { transform } from "@/utils/form";
-
-interface ExchangeFormData {
-  fromToken: string;
-  toToken: string;
-  fromAmount: string;
-  toAmount: string;
-}
+import { useExchangeForm } from "@/hooks/use-exchange-form";
 
 export const ExchangeForm = () => {
-  const { data: currencies } = useGetTokenList();
-  const { control, handleSubmit, watch, setValue, reset } =
-    useForm<ExchangeFormData>({
-      defaultValues: {
-        fromToken: "",
-        toToken: "",
-        fromAmount: "",
-        toAmount: "",
-      },
-    });
-
-  useEffect(() => {
-    if (currencies && !fromToken && !toToken) {
-      reset({
-        fromToken: currencies[0].currency,
-        toToken: currencies[1].currency,
-      });
-    }
-  }, [currencies]);
-
-  const fromToken = watch("fromToken");
-  const toToken = watch("toToken");
-  const fromAmount = watch("fromAmount");
-  const toAmount = watch("toAmount");
-
-  const handleSwap = () => {
-    const tempToken = fromToken;
-    const tempAmount = fromAmount;
-    setValue("fromToken", toToken);
-    setValue("toToken", tempToken);
-    setValue("fromAmount", toAmount);
-    setValue("toAmount", tempAmount);
-  };
-
-  const getUSDValue = (currency: string) => {
-    const priceOrNull = currencies?.find(
-      (item) => item.currency === currency
-    )?.price;
-    return priceOrNull ? `${priceOrNull.toFixed(2)} usd` : "N/A";
-  };
-
-  const onSubmit = (data: ExchangeFormData) => {
-    console.log("Exchange data:", data);
-  };
-
-  const uniqueTokens = Array.from(
-    new Map(currencies?.map((token) => [token.currency, token])).values()
-  );
-
+  const {
+    fromToken,
+    toToken,
+    control,
+    uniqueTokens,
+    getUSDValue,
+    swapCurrency,
+    exchangingFromAmount,
+    exchangingToAmount,
+    updateFromAmountToken,
+    updateToAmountToken,
+    updateToToken,
+    updateFromToken,
+  } = useExchangeForm();
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col justify-center w-[400px] box-content gap-10 bg-gray-50 rounded-2xl p-8 shadow"
-    >
+    <form className="flex flex-col justify-center w-120 box-content gap-10 bg-gray-50 rounded-2xl p-8 shadow">
       <div className="flex flex-col gap-4">
         <div className="flex align-middle items-center gap-4 justify-between">
           <CurrencyLabel currency={fromToken} />
@@ -82,7 +36,13 @@ export const ExchangeForm = () => {
             name="fromToken"
             control={control}
             render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={(e) => {
+                  updateFromToken(e);
+                  field.onChange(e);
+                }}
+                value={field.value}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Token" />
                 </SelectTrigger>
@@ -107,17 +67,25 @@ export const ExchangeForm = () => {
             control={control}
             render={({ field }) => (
               <CurrencyInput
-                onInputChange={field.onChange}
+                onInputChange={(e: string) => {
+                  updateFromAmountToken(e);
+                  field.onChange(e);
+                }}
                 transform={transform}
                 value={field.value}
                 suffix={getUSDValue(fromToken)}
+                loading={exchangingFromAmount}
               />
             )}
           />
         </div>
       </div>
 
-      <Button type="button" onClick={handleSwap}>
+      <Button
+        type="button"
+        onClick={swapCurrency}
+        disabled={exchangingFromAmount || exchangingToAmount}
+      >
         ⇅ Swap
       </Button>
 
@@ -128,7 +96,13 @@ export const ExchangeForm = () => {
             name="toToken"
             control={control}
             render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={(e) => {
+                  updateToToken(e);
+                  field.onChange(e);
+                }}
+                value={field.value}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Token" />
                 </SelectTrigger>
@@ -153,10 +127,14 @@ export const ExchangeForm = () => {
             control={control}
             render={({ field }) => (
               <CurrencyInput
-                onInputChange={field.onChange}
+                onInputChange={(e: string) => {
+                  updateToAmountToken(e);
+                  field.onChange(e);
+                }}
                 transform={transform}
                 value={field.value}
                 suffix={getUSDValue(toToken)}
+                loading={exchangingToAmount}
               />
             )}
           />

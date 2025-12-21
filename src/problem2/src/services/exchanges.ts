@@ -17,7 +17,7 @@ export const swapToken = async ({
   fromToken,
   toToken,
   amount,
-}: SwapRequestData) => {
+}: SwapRequestData): Promise<number> => {
   const tokenList = await getTokenList();
   const fromTokenValue = tokenList.find(
     (item) => item.currency === fromToken
