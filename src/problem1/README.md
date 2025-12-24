@@ -3,6 +3,18 @@
 ## Answer 1: Sum of Array Elements
 
 ```javascript
+function sum_to_n_b(n) {
+  if (n === 0) return 0;
+  return n + sum_to_n_b(n - 1);
+}
+```
+
+Time complexity: O(N)
+Space complexity: O(N)
+
+## Answer 2: Loop Approach
+
+```javascript
 function sum_to_n_a(n) {
   let sum = 0;
   for (let i = 1; i <= n; i++) {
@@ -12,26 +24,6 @@ function sum_to_n_a(n) {
 }
 ```
 
-Time complexity: O(N)
-Space complexity: O(1)
-
-## Answer 2: While Loop Approach
-
-```javascript
-function sum_to_n_c(n) {
-  let sum = 0;
-  let i = 1;
-  while (i <= n) {
-    sum += i;
-    i++;
-  }
-  return sum;
-}
-```
-
-Time complexity: O(N)
-Space complexity: O(1)
-
 ## Answer 3: Mathematical Formula
 
 // Using the math formula
@@ -40,7 +32,7 @@ Space complexity: O(1)
 = (1 + n) _ (n/2)
 
 ```javascript
-function sum_to_n_b(n) {
+function sum_to_n_c(n) {
   return (n * (n + 1)) / 2;
 }
 ```
