@@ -1,11 +1,11 @@
 # Problem 1 Solutions
 
-## Answer 1: Sum of Array Elements
+## Answer 1: Recursive
 
 ```javascript
-function sum_to_n_b(n) {
+function sum_to_n_a(n) {
   if (n === 0) return 0;
-  return n + sum_to_n_b(n - 1);
+  return n + sum_to_n_a(n - 1);
 }
 ```
 
@@ -15,7 +15,7 @@ Space complexity: O(N)
 ## Answer 2: Loop Approach
 
 ```javascript
-function sum_to_n_a(n) {
+function sum_to_n_b(n) {
   let sum = 0;
   for (let i = 1; i <= n; i++) {
     sum += i;
